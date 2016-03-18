@@ -7,12 +7,13 @@ if nargin==0
 %   Main form
     h=figure('MenuBar','None',...
         'Name','Отправить письмо',...
-        'Position',[520 550 370 250],...
+        'Position',[520 550 500 250],...
         'Tag','sendform');
     
 %  
     MM=uicontrol('Parent',h,'Style','Checkbox',...
-        'Position',[350 210 15 23],'BackgroundColor',[0.8 0.8 0.8],'Tag','cb');
+        'Position',[350 210 100 23],'BackgroundColor',[0.8 0.8 0.8],'Tag','cb',...
+        'String','Запомнить');
 
     
 %     edit 4 message
@@ -44,9 +45,16 @@ if nargin==0
       uicontrol('Parent', h, 'Style', 'edit','String','',...
         'Position',[50 180 201 22],...
         'Tag','eTo');
+    
+%  file list: edit
+      uicontrol('Parent', h, 'Style', 'edit','String','',...
+        'Position',[360 5 135 168],...
+        'Max',10,'HorizontalAlignment','left',...
+        'Tag','eFL','enable','inactive');
+    
 %  from : edit login
       L=uicontrol('Parent', h, 'Style', 'edit','String','',...
-        'Position',[50 210 150 22],...
+        'Position',[55 210 150 22],...
         'Tag','eFromLogin');
 %  from : edit pass
       P=uicontrol('Parent', h, 'Style', 'edit','String','',...
@@ -57,6 +65,12 @@ if nargin==0
     uicontrol('Parent', h, 'Style', 'pushbutton','String','Отправить',...
         'Position',[255 180 101 23],...
         'Callback',{@btn_Send,h});
+    
+%     files button
+    uicontrol('Parent', h, 'Style', 'pushbutton','String','Прикрепить',...
+        'Position',[355 180 90 23],...
+        'Callback',{@btn_File,h});    
+    
     
     if exist('MyMail.mat')==0
         set(MM,'Value',0);
@@ -96,6 +110,32 @@ elseif nargin==4
     sendmail(varargin{2},'',M);
 end
 
+
+function btn_File(hObject, eventdata, handles)
+clc
+h=guihandles(handles);
+list=get(h.eFL,'String');
+[chose chose_path]=uigetfile('*.*');
+
+chose_path(end)='';
+
+if strcmp(chose_path,pwd)==0
+    chose=[chose_path '\' chose];
+end   
+    if chose~=0
+        if sum(strcmp(list,chose))==0
+            if ~isempty(list)
+                n=numel(list(:,1))+1;
+            else
+                n=1;
+            end
+            list{n,1}=chose;
+        end
+        set(h.eFL,'String',list);
+    end
+    
+
+
 function btn_Send(hObject, eventdata, handles)
 try
 
@@ -133,7 +173,8 @@ end
     for i=1:numel(Message(:,1))
         M=[M Message(i,:) 10];
     end
-    sendmail(To,'From Matlab',M);
+    filelist=get(h.eFL,'String');
+    sendmail(To,'From Matlab',M,filelist);
         close(h.sendform)
 catch
     errordlg({'Произошла ошибка!','Проверьте адреса почты отправителя или получателя.'})
