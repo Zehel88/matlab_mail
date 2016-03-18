@@ -98,7 +98,9 @@ end
 
 function btn_Send(hObject, eventdata, handles)
 try
+
 h=guihandles(handles);
+
 To=get(h.eTo,'String');
 Login=get(h.eFromLogin,'String');
 Pass=get(h.eFromPass,'String');
@@ -132,6 +134,7 @@ end
         M=[M Message(i,:) 10];
     end
     sendmail(To,'From Matlab',M);
+        close(h.sendform)
 catch
     errordlg({'Произошла ошибка!','Проверьте адреса почты отправителя или получателя.'})
 end
