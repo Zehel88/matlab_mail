@@ -110,7 +110,6 @@ elseif nargin==4
     sendmail(varargin{2},'',M);
 end
 
-
 function btn_File(hObject, eventdata, handles)
 h=guihandles(handles);
 list=get(h.eFL,'String');
@@ -131,7 +130,6 @@ end
         set(h.eFL,'String',list);
     end
     
-
 
 function btn_Send(hObject, eventdata, handles)
 try
