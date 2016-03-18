@@ -112,13 +112,10 @@ end
 
 
 function btn_File(hObject, eventdata, handles)
-clc
 h=guihandles(handles);
 list=get(h.eFL,'String');
 [chose chose_path]=uigetfile('*.*');
-
 chose_path(end)='';
-
 if strcmp(chose_path,pwd)==0
     chose=[chose_path '\' chose];
 end   
