@@ -2,12 +2,19 @@ function e_mail(varargin)
 % e_mail - Послать письмо по электронной почте
 
 if nargin==0
-    clc
+
+    
 %   Main form
     h=figure('MenuBar','None',...
         'Name','Отправить письмо',...
-        'Position',[520 550 360 250],...
+        'Position',[520 550 370 250],...
         'Tag','sendform');
+    
+%  
+    MM=uicontrol('Parent',h,'Style','Checkbox',...
+        'Position',[350 210 15 23],'BackgroundColor',[0.8 0.8 0.8],'Tag','cb');
+
+    
 %     edit 4 message
     uicontrol('Parent', h, 'Style', 'edit','String','',...
         'Position',[5 5 350 168],...
@@ -38,11 +45,11 @@ if nargin==0
         'Position',[50 180 201 22],...
         'Tag','eTo');
 %  from : edit login
-      uicontrol('Parent', h, 'Style', 'edit','String','',...
+      L=uicontrol('Parent', h, 'Style', 'edit','String','',...
         'Position',[50 210 150 22],...
         'Tag','eFromLogin');
 %  from : edit pass
-      uicontrol('Parent', h, 'Style', 'edit','String','',...
+      P=uicontrol('Parent', h, 'Style', 'edit','String','',...
         'Position',[200 210 150 22],...
         'Tag','eFromPass');
     
@@ -51,7 +58,14 @@ if nargin==0
         'Position',[255 180 101 23],...
         'Callback',{@btn_Send,h});
     
-    disp('done')
+    if exist('MyMail.mat')==0
+        set(MM,'Value',0);
+    else
+        load('MyMail.mat');
+        set(L,'String',MyMail.Login);
+        set(P,'String',MyMail.Pass);
+        set(MM,'Value',1);
+    end
 
 elseif nargin==4
     
@@ -89,7 +103,11 @@ To=get(h.eTo,'String');
 Login=get(h.eFromLogin,'String');
 Pass=get(h.eFromPass,'String');
 Message=get(h.eMessage,'String');
-
+if get(h.cb,'Value')==1
+    MyMail.Login=Login;
+    MyMail.Pass=Pass;
+    save('MyMail.mat','MyMail');
+end
     setpref('Internet','E_mail',Login);
     
     if ~isempty(findstr(Login,'@yandex.')) || ~isempty(findstr(Login,'@ya.'))
@@ -113,7 +131,7 @@ Message=get(h.eMessage,'String');
     for i=1:numel(Message(:,1))
         M=[M Message(i,:) 10];
     end
-    sendmail(To,'',M);
+    sendmail(To,'From Matlab',M);
 catch
     errordlg({'Произошла ошибка!','Проверьте адреса почты отправителя или получателя.'})
 end
