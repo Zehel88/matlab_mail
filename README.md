@@ -1,4 +1,4 @@
-# matlab_mail
+# e_mail
 Send email from matlab (by function use in script or by using GUI)
 e_mail - without any parametrs, provides GUI that help u send email
 or u can run function with 5 parametrs :
